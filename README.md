@@ -1,0 +1,1 @@
+# Gatilhos-Mentais-
