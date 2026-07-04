@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Trilha de Inteligência Emocional</title>
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff;
+  --bg-alt: #f7f6fb;
+  --fg: #1a1a1a;
+  --muted: #5a5a63;
+  --accent: #7c3aed;
+  --accent-fg: #ffffff;
+  --border: #e2e2ea;
+  --code-bg: #f0eefb;
+  --good: #1f9d55;
+  --danger: #d64545;
+}
+:root[data-theme="dark"] {
+  --bg: #14141a;
+  --bg-alt: #1b1b24;
+  --fg: #ececee;
+  --muted: #a3a3ad;
+  --accent: #b794f6;
+  --accent-fg: #1a1a1a;
+  --border: #2c2c38;
+  --code-bg: #21212c;
+  --good: #4ade80;
+  --danger: #f87171;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14141a;
+    --bg-alt: #1b1b24;
+    --fg: #ececee;
+    --muted: #a3a3ad;
+    --accent: #b794f6;
+    --accent-fg: #1a1a1a;
+    --border: #2c2c38;
+    --code-bg: #21212c;
+    --good: #4ade80;
+    --danger: #f87171;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+}
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 0;
+}
+.title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+h1.app-title {
+  font-size: 1.25rem;
+  margin: 0 0 0.75rem;
+}
+h1.app-title span { color: var(--accent); }
+#theme-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+nav {
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scrollbar-width: thin;
+}
+nav button {
+  flex: none;
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 0.55rem 0.8rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+nav button:hover { color: var(--fg); }
+nav button.active {
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
+  font-weight: 600;
+}
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 5rem;
+}
+section.panel { display: none; }
+section.panel.active { display: block; animation: fade .15s ease-in; }
+@keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+
+h2 { font-size: 1.5rem; margin-top: 0; }
+h3 { font-size: 1.1rem; color: var(--accent); margin-top: 1.8rem; }
+p.lead { color: var(--muted); font-size: 1.02rem; }
+
+blockquote {
+  margin: 1rem 0;
+  padding: 0.7rem 1rem;
+  border-left: 4px solid var(--accent);
+  background: var(--code-bg);
+  color: var(--muted);
+  border-radius: 0 6px 6px 0;
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin: 1rem 0;
+  background: var(--bg-alt);
+}
+
+.epr-diagram {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-weight: 600;
+  margin: 1.2rem 0;
+}
+.epr-box {
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  text-align: center;
+  background: var(--code-bg);
+}
+.epr-box.pause { border-color: var(--accent); color: var(--accent); }
+.epr-arrow { color: var(--muted); font-size: 1.3rem; }
+
+/* Accordion (cenarios / frases) */
+.accordion-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin: 0.7rem 0;
+  overflow: hidden;
+}
+.accordion-header {
+  width: 100%;
+  text-align: left;
+  background: var(--bg-alt);
+  border: none;
+  color: var(--fg);
+  padding: 0.9rem 1.1rem;
+  font-size: 0.98rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.accordion-header:after {
+  content: "+";
+  color: var(--accent);
+  font-size: 1.2rem;
+  flex: none;
+}
+.accordion-item.open .accordion-header:after { content: "–"; }
+.accordion-body {
+  display: none;
+  padding: 0 1.1rem 1rem;
+  color: var(--muted);
+}
+.accordion-item.open .accordion-body { display: block; }
+.accordion-body .tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 0.3rem;
+}
+.tag.bad { background: color-mix(in srgb, var(--danger) 18%, transparent); color: var(--danger); }
+.tag.good { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
+.phrase-answer { margin-top: 0.6rem; font-style: italic; color: var(--fg); }
+
+/* Checklists */
+.checklist { list-style: none; padding: 0; margin: 0; }
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.checklist li:last-child { border-bottom: none; }
+.checklist input[type="checkbox"] {
+  margin-top: 0.2rem;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex: none;
+}
+.checklist label { cursor: pointer; }
+.checklist li.checked label { color: var(--muted); text-decoration: line-through; }
+
+.progress-wrap {
+  background: var(--border);
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+  margin: 0.6rem 0 1rem;
+}
+.progress-bar {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width .25s ease;
+}
+.progress-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+}
+
+.streak-box {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: var(--code-bg);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1rem;
+}
+.streak-num { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+.streak-text { color: var(--muted); font-size: 0.9rem; }
+
+.day-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin: 0.8rem 0;
+  background: var(--bg-alt);
+}
+.day-card.done { border-color: var(--good); }
+.day-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.day-card-head h4 { margin: 0; font-size: 1rem; }
+.day-check {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.day-check input {
+  width: 18px; height: 18px; accent-color: var(--good); cursor: pointer;
+}
+
+.reset-link {
+  background: none;
+  border: none;
+  color: var(--muted);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0;
+}
+
+footer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 3rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="title-row">
+      <h1 class="app-title">Trilha de <span>Inteligência Emocional</span></h1>
+      <button id="theme-toggle" type="button">🌓 Tema</button>
+    </div>
+    <nav id="nav"></nav>
+  </div>
+</header>
+
+<main id="main"></main>
+
+<footer>
+  Seu progresso fica salvo neste navegador (localStorage) — não sai daqui, ninguém mais vê.
+</footer>
+
+<script>
+const STORAGE_KEY = "tie_v1";
+
+function loadState() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  } catch (e) { return {}; }
+}
+function saveState(state) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+let state = loadState();
+state.daily = state.daily || {};
+state.plan7 = state.plan7 || {};
+state.streak = state.streak || { count: 0, lastFullDate: null };
+
+function todayStr() {
+  const d = new Date();
+  return d.toISOString().slice(0, 10);
+}
+
+/* ---------- content model ---------- */
+const sections = [
+  { id: "diagnostico", label: "Diagnóstico" },
+  { id: "gatilhos", label: "Os 5 Gatilhos" },
+  { id: "modelo", label: "Modelo E-P-R" },
+  { id: "exercicios", label: "Exercícios Diários" },
+  { id: "cenarios", label: "Cenários Corporativos" },
+  { id: "frases", label: "Conversas Difíceis" },
+  { id: "plano7", label: "Plano de 7 Dias" },
+  { id: "final", label: "Direto ao Ponto" },
+];
+
+const gatilhos = [
+  {
+    nome: "Ansiedade",
+    oque: "Seu cérebro simulando futuros ruins repetidamente como se isso te preparasse. Na prática, só desgasta e deixa reativo.",
+    trabalho: "Você responde o e-mail do chefe já imaginando três cenários catastróficos antes de terminar de ler. Reunião 'sem pauta' já vira demissão na sua cabeça.",
+    erro: "Tentar eliminar a ansiedade pensando mais nela. Isso alimenta o ciclo.",
+    funciona: "Trazer o corpo para o presente (respiração, aterramento) e separar 'isso é fato' de 'isso é hipótese'."
+  },
+  {
+    nome: "Medo",
+    oque: "Resposta a uma ameaça específica, real ou percebida — perder o emprego, ser exposto, falhar publicamente.",
+    trabalho: "Evitar dar feedback duro para não gerar conflito; não pedir aumento; não assumir um projeto visível com medo de errar na frente de todos.",
+    erro: "Confundir medo com 'sinal de que não devo fazer isso'. Quase sempre é sinal de que a coisa importa, não de que é errada.",
+    funciona: "Perguntar: 'o que exatamente eu temo que aconteça, e o que eu faria se acontecesse?' — o medo encolhe quando vira plano."
+  },
+  {
+    nome: "Insegurança",
+    oque: "Dúvida crônica sobre seu próprio valor ou competência, alimentada por comparação e um crítico interno mal calibrado.",
+    trabalho: "Concordar com tudo em reunião mesmo discordando; reescrever um e-mail simples cinco vezes; achar que 'vão descobrir que você não é tão bom assim'.",
+    erro: "Buscar validação externa constante para resolver a insegurança. É um poço sem fundo.",
+    funciona: "Construir um 'dossiê de evidências' real — fatos, não sentimentos — do que você já entregou."
+  },
+  {
+    nome: "Impulsividade",
+    oque: "Agir ou falar antes de processar, geralmente para aliviar uma tensão emocional imediata (raiva, humilhação, urgência).",
+    trabalho: "Responder um e-mail 'no calor', interromper alguém de forma ríspida em reunião, tomar uma decisão importante em 30 segundos de irritação.",
+    erro: "Achar que impulsividade é 'autenticidade' ou 'ser direto'. Não é — é falta de filtro entre sentir e agir.",
+    funciona: "Instalar uma pausa mecânica obrigatória: regra dos 10 segundos, ou regra das 2 horas para mensagens sensíveis."
+  },
+  {
+    nome: "Reações sob pressão",
+    oque: "A soma dos quatro anteriores ativando ao mesmo tempo em situações de alto risco — cobrança pública, conflito, decisão urgente.",
+    trabalho: "Travar mental em reunião de diretoria; explodir com a equipe num dia de entrega apertada; ficar em silêncio submisso quando deveria se posicionar.",
+    erro: "Improvisar a reação na hora, sem protocolo.",
+    funciona: "Ter um protocolo pré-definido para os primeiros 10 segundos de qualquer situação de pressão — é o que esta trilha te dá."
+  },
+];
+
+const cenarios = [
+  {
+    titulo: "Seu chefe te cobra na frente de outras pessoas",
+    ruim: "Justificar-se atropelado, ou paralisar em silêncio envergonhado.",
+    boa: "“Entendi o ponto. Vamos alinhar os detalhes depois da reunião para eu te trazer uma solução concreta?” — tira você do modo defesa pública e leva a conversa para um espaço 1:1, onde há mais controle emocional."
+  },
+  {
+    titulo: "Um colega leva crédito pelo seu trabalho",
+    ruim: "Explodir na reunião, ou engolir e ressentir por meses.",
+    boa: "Em particular, depois: “Percebi que na reunião o projeto X foi apresentado como seu. Quero entender o que aconteceu, porque boa parte daquele trabalho foi meu e isso importa para mim.” Direto, sem acusação disfarçada de pergunta."
+  },
+  {
+    titulo: "Você precisa dar um feedback duro para um liderado",
+    ruim: "Suavizar tanto que a mensagem se perde, ou ser agressivo para 'não parecer fraco'.",
+    boa: "“Preciso te dar um feedback direto porque confio na sua capacidade de melhorar isso. [Fato específico]. O impacto foi [X]. O que eu preciso ver diferente é [Y].” Fato → impacto → expectativa."
+  },
+  {
+    titulo: "Decisão de última hora sob pressão (prazo apertado, cliente bravo)",
+    ruim: "Decidir no impulso só para 'resolver logo' e aliviar a ansiedade.",
+    boa: "Aplicar a pausa mesmo sob prazo curto: “Me dá 15 minutos para te trazer a melhor resposta” já tira do modo pânico e permite pensar com clareza."
+  },
+  {
+    titulo: "Você discorda de uma decisão em reunião, mas tem medo de se posicionar",
+    ruim: "Concordar por medo e reclamar depois, nos bastidores.",
+    boa: "“Quero trazer uma outra perspectiva antes de fecharmos isso — posso?” Pedir espaço já tira o medo da equação."
+  },
+];
+
+const frases = [
+  { situacao: "Para pedir mais tempo sob pressão", frase: "Quero te dar uma resposta bem pensada, não apressada. Consigo retornar em [prazo]?" },
+  { situacao: "Para colocar limite numa cobrança injusta", frase: "Entendo a urgência. Preciso que a expectativa seja realista com o que é possível entregar até [data]." },
+  { situacao: "Para admitir um erro sem se destruir", frase: "Eu errei em [X]. Já identifiquei a causa e o que vou fazer diferente é [Y]." },
+  { situacao: "Para discordar de alguém com mais poder", frase: "Respeito a decisão, mas quero registrar uma preocupação sobre [X] para constar." },
+  { situacao: "Para encerrar um conflito que está escalando", frase: "Acho que os dois estamos ficando tensos. Podemos retomar isso em 10 minutos com mais clareza?" },
+  { situacao: "Para pedir feedback sobre você mesmo", frase: "O que eu poderia ter feito diferente em [situação]? Quero melhorar de verdade." },
+  { situacao: "Para não ceder à insegurança numa negociação", frase: "Baseado no que entrego, acredito que [X] é justo. Vamos conversar sobre como chegar lá?" },
+];
+
+const dailyChecklist = [
+  { id: "m1", periodo: "Manhã", texto: "Respire 4s inspirando / 6s expirando por 1 minuto, antes de abrir e-mail/Slack." },
+  { id: "m2", periodo: "Manhã", texto: "Diga baixo: 'hoje eu posso encontrar [situação temida]. Se acontecer, respondo, não reajo.'" },
+  { id: "m3", periodo: "Manhã", texto: "Escreva: 'hoje eu escolho responder, não reagir.'" },
+  { id: "d1", periodo: "Durante o dia", texto: "A cada gatilho notado no corpo (mandíbula, ombros, respiração curta): nomeie a emoção em uma palavra." },
+  { id: "d2", periodo: "Durante o dia", texto: "Respire 3 vezes, expiração mais longa que a inspiração." },
+  { id: "d3", periodo: "Durante o dia", texto: "Pergunte: 'isso precisa de resposta agora, ou pode esperar 10 minutos?' — na dúvida, espera." },
+  { id: "n1", periodo: "Noite", texto: "Qual foi o momento de maior tensão emocional hoje?" },
+  { id: "n2", periodo: "Noite", texto: "Reação automática vs. o que eu gostaria de ter feito." },
+  { id: "n3", periodo: "Noite", texto: "Uma evidência real (não sentimento) de que fiz algo bem hoje." },
+  { id: "n4", periodo: "Noite", texto: "Uma frase de ajuste para amanhã." },
+];
+
+const plano7 = [
+  { dia: 1, titulo: "Diagnóstico honesto", texto: "Identifique por escrito quais dos 5 gatilhos mais te derruba. Dê 1 exemplo real dos últimos 30 dias para cada um. Sem isso, você treina no escuro." },
+  { dia: 2, titulo: "Instalar a pausa", texto: "Pratique a regra dos 10 segundos em toda interação do dia, mesmo em situações neutras. Faça o check-in de corpo pelo menos 3 vezes." },
+  { dia: 3, titulo: "Nomear para dominar", texto: "A cada gatilho notado, nomeie a emoção em voz alta ou por escrito. Meta: sair de 'eu sou ansioso' para 'estou sentindo ansiedade agora, é passageiro'." },
+  { dia: 4, titulo: "Testar uma frase difícil", texto: "Escolha 1 conversa que você vem evitando e use uma das frases prontas. Não precisa ser perfeito — precisa ser feito." },
+  { dia: 5, titulo: "Revisitar o impulso", texto: "Toda vez que sentir vontade de responder na hora, aplique a regra das 2 horas pelo menos uma vez. Compare o que você teria mandado com o que mandou depois." },
+  { dia: 6, titulo: "Construir o dossiê de autoconfiança", texto: "Liste 10 fatos concretos (não elogios) do que você já entregou nos últimos 6-12 meses. Releia antes de qualquer situação que ativa insegurança." },
+  { dia: 7, titulo: "Simulação de pressão real", texto: "Enfrente a situação mais desconfortável da semana usando o ciclo completo: pausa → nomear → frase estruturada → resposta escolhida. Depois, escreva o que mudou entre o 'você de segunda' e o 'você de domingo'." },
+];
+
+/* ---------- rendering ---------- */
+const nav = document.getElementById("nav");
+const main = document.getElementById("main");
+
+function switchTo(id) {
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("active", b.dataset.id === id));
+  document.querySelectorAll("section.panel").forEach(s => s.classList.toggle("active", s.id === id));
+  location.hash = id;
+}
+
+sections.forEach(s => {
+  const btn = document.createElement("button");
+  btn.textContent = s.label;
+  btn.dataset.id = s.id;
+  btn.addEventListener("click", () => switchTo(s.id));
+  nav.appendChild(btn);
+});
+
+function el(html) {
+  const t = document.createElement("template");
+  t.innerHTML = html.trim();
+  return t.content.firstChild;
+}
+
+function renderDiagnostico() {
+  return el(`
+  <section id="diagnostico" class="panel">
+    <h2>O diagnóstico brutal primeiro</h2>
+    <p class="lead">Antes de qualquer técnica, uma verdade que a maioria evita.</p>
+    <p><strong>Você não tem "problema de personalidade", você tem um sistema nervoso mal treinado para o ambiente em que vive.</strong> Ansiedade, medo, insegurança e impulsividade não são defeitos de caráter — são respostas automáticas de sobrevivência disparando fora de hora, geralmente em contextos onde não há risco real de vida, só risco de imagem, ego ou controle.</p>
+    <blockquote>O problema não é sentir. O problema é que hoje quem decide por você é o gatilho, não você.</blockquote>
+    <p>A meta desta trilha não é "nunca mais sentir ansiedade" — isso é impossível e desonesto. A meta é <strong>reduzir o tempo entre o gatilho e a resposta consciente</strong>, e aumentar sua capacidade de agir com intenção mesmo sob pressão.</p>
+    <p>Se você está esperando uma fórmula mágica de 7 dias que "resolve" isso, já adianto: não existe. Existe repetição. Regulação emocional é músculo, não interruptor.</p>
+  </section>`);
+}
+
+function renderGatilhos() {
+  const items = gatilhos.map(g => `
+    <div class="card">
+      <h3>${g.nome}</h3>
+      <p><strong>O que é, na prática:</strong> ${g.oque}</p>
+      <p><strong>Como aparece no trabalho:</strong> ${g.trabalho}</p>
+      <p><strong>Erro comum:</strong> ${g.erro}</p>
+      <p><strong>O que funciona:</strong> ${g.funciona}</p>
+    </div>`).join("");
+  return el(`
+  <section id="gatilhos" class="panel">
+    <h2>Os 5 gatilhos que você vai aprender a controlar</h2>
+    ${items}
+  </section>`);
+}
+
+function renderModelo() {
+  return el(`
+  <section id="modelo" class="panel">
+    <h2>O modelo mental central: E-P-R</h2>
+    <p>Toda a trilha gira em torno de um único modelo. Grave ele:</p>
+    <div class="epr-diagram">
+      <div class="epr-box">Estímulo<br><small>(gatilho)</small></div>
+      <div class="epr-arrow">→</div>
+      <div class="epr-box pause">Pausa consciente<br><small>(seu novo músculo)</small></div>
+      <div class="epr-arrow">→</div>
+      <div class="epr-box">Resposta escolhida<br><small>(não mais automática)</small></div>
+    </div>
+    <p>Sem a pausa, estímulo vira reação automática direto — é aí que moram os e-mails que você se arrepende de ter mandado, as respostas ríspidas, o silêncio covarde quando deveria falar. A pausa consciente é a única coisa que você está construindo aqui. Tudo mais é detalhe.</p>
+  </section>`);
+}
+
+function renderExercicios() {
+  const periodos = ["Manhã", "Durante o dia", "Noite"];
+  const groups = periodos.map(p => {
+    const items = dailyChecklist.filter(i => i.periodo === p).map(i => `
+      <li data-id="${i.id}">
+        <input type="checkbox" id="chk-${i.id}" />
+        <label for="chk-${i.id}">${i.texto}</label>
+      </li>`).join("");
+    return `<h3>${p}</h3><ul class="checklist">${items}</ul>`;
+  }).join("");
+
+  return el(`
+  <section id="exercicios" class="panel">
+    <h2>Exercícios diários</h2>
+    <p class="lead">Faça todos os dias, não só quando "der problema". Regulação emocional treinada só em crise não existe — vira crise.</p>
+
+    <div class="streak-box">
+      <div class="streak-num" id="streak-num">0</div>
+      <div class="streak-text">dia(s) seguido(s) com o checklist completo</div>
+    </div>
+
+    <div class="progress-label"><span>Checklist de hoje</span><span id="daily-progress-text">0/10</span></div>
+    <div class="progress-wrap"><div class="progress-bar" id="daily-progress-bar"></div></div>
+
+    ${groups}
+
+    <div class="card">
+      <h3>Regra dos 10 segundos</h3>
+      <p>Qualquer situação de conflito, cobrança ou provocação: conte até 10 (respirando) antes de abrir a boca ou digitar. Sem exceção.</p>
+    </div>
+    <div class="card">
+      <h3>Regra das 2 horas</h3>
+      <p>Nunca envie e-mail/mensagem escrito em estado de raiva na hora. Escreva se precisar descarregar, mas só envie depois de 2 horas. Releia perguntando: "isso constrói ou só desabafa?"</p>
+    </div>
+
+    <button class="reset-link" id="reset-daily">Resetar checklist de hoje</button>
+  </section>`);
+}
+
+function renderCenarios() {
+  const items = cenarios.map((c, idx) => `
+    <div class="accordion-item" data-idx="c${idx}">
+      <button class="accordion-header">${c.titulo}</button>
+      <div class="accordion-body">
+        <span class="tag bad">Reação automática</span>
+        <p>${c.ruim}</p>
+        <span class="tag good">Resposta madura</span>
+        <p>${c.boa}</p>
+      </div>
+    </div>`).join("");
+  return el(`
+  <section id="cenarios" class="panel">
+    <h2>Cenários corporativos</h2>
+    <p class="lead">Clique em cada situação para ver a reação automática e a resposta madura.</p>
+    ${items}
+  </section>`);
+}
+
+function renderFrases() {
+  const items = frases.map((f, idx) => `
+    <div class="accordion-item" data-idx="f${idx}">
+      <button class="accordion-header">${f.situacao}</button>
+      <div class="accordion-body">
+        <p class="phrase-answer">"${f.frase}"</p>
+      </div>
+    </div>`).join("");
+  return el(`
+  <section id="frases" class="panel">
+    <h2>Frases para conversas difíceis</h2>
+    <p class="lead">Estrutura por trás de todas: fato → impacto → pedido/expectativa. Clique para revelar — melhor ainda: tente lembrar antes de abrir.</p>
+    ${items}
+  </section>`);
+}
+
+function renderPlano7() {
+  const cards = plano7.map(d => `
+    <div class="day-card" data-day="${d.dia}">
+      <div class="day-card-head">
+        <h4>Dia ${d.dia} — ${d.titulo}</h4>
+        <label class="day-check">
+          <input type="checkbox" id="day-${d.dia}" />
+          concluído
+        </label>
+      </div>
+      <p>${d.texto}</p>
+    </div>`).join("");
+  return el(`
+  <section id="plano7" class="panel">
+    <h2>Plano de evolução — 7 dias</h2>
+    <p class="lead">Não pule dias — a ordem importa, cada dia constrói sobre o anterior.</p>
+    <div class="progress-label"><span>Progresso da semana</span><span id="plan7-progress-text">0/7</span></div>
+    <div class="progress-wrap"><div class="progress-bar" id="plan7-progress-bar"></div></div>
+    ${cards}
+  </section>`);
+}
+
+function renderFinal() {
+  return el(`
+  <section id="final" class="panel">
+    <h2>O que só eu vou te dizer, direto</h2>
+    <ul>
+      <li>Você não precisa "não sentir medo" para ser corajoso. Precisa agir mesmo sentindo. Quem espera a insegurança sumir para agir nunca age.</li>
+      <li>Impulsividade fantasiada de "ser autêntico" já custou promoções, relações e credibilidade para muita gente competente. Filtro não é fraqueza.</li>
+      <li>Ninguém confia em quem concorda com tudo. Postura profissional real inclui discordar com respeito — silêncio constante não é maturidade, é medo disfarçado.</li>
+      <li>Autoconfiança não vem de eliminar a dúvida. Vem de ter evidência concreta e agir apesar da dúvida.</li>
+      <li>Essa trilha não termina no dia 7. No dia 8, você repete o ciclo, com mais consciência. Regulação emocional é prática contínua, não certificado.</li>
+    </ul>
+    <blockquote><strong>Próximo passo real:</strong> feche o dia 1 hoje. Não amanhã. Escreva o diagnóstico agora, enquanto está com a cabeça nesse assunto.</blockquote>
+  </section>`);
+}
+
+main.appendChild(renderDiagnostico());
+main.appendChild(renderGatilhos());
+main.appendChild(renderModelo());
+main.appendChild(renderExercicios());
+main.appendChild(renderCenarios());
+main.appendChild(renderFrases());
+main.appendChild(renderPlano7());
+main.appendChild(renderFinal());
+
+/* ---------- interactivity: accordions ---------- */
+document.querySelectorAll(".accordion-item").forEach(item => {
+  item.querySelector(".accordion-header").addEventListener("click", () => {
+    item.classList.toggle("open");
+  });
+});
+
+/* ---------- interactivity: daily checklist ---------- */
+function ensureDailyDate() {
+  if (state.daily.date !== todayStr()) {
+    // new day: evaluate previous day's streak before resetting
+    const prevChecked = state.daily.checked || {};
+    const prevTotal = dailyChecklist.length;
+    const prevCount = Object.values(prevChecked).filter(Boolean).length;
+    if (state.daily.date) {
+      if (prevCount === prevTotal) {
+        state.streak.count = (state.streak.count || 0) + 1;
+      } else {
+        state.streak.count = 0;
+      }
+    }
+    state.daily = { date: todayStr(), checked: {} };
+  }
+}
+ensureDailyDate();
+
+function renderDailyProgress() {
+  const total = dailyChecklist.length;
+  const count = Object.values(state.daily.checked || {}).filter(Boolean).length;
+  document.getElementById("daily-progress-text").textContent = `${count}/${total}`;
+  document.getElementById("daily-progress-bar").style.width = `${(count / total) * 100}%`;
+  document.getElementById("streak-num").textContent = state.streak.count || 0;
+}
+
+dailyChecklist.forEach(i => {
+  const cb = document.getElementById(`chk-${i.id}`);
+  const li = cb.closest("li");
+  cb.checked = !!(state.daily.checked || {})[i.id];
+  li.classList.toggle("checked", cb.checked);
+  cb.addEventListener("change", () => {
+    state.daily.checked[i.id] = cb.checked;
+    li.classList.toggle("checked", cb.checked);
+    const total = dailyChecklist.length;
+    const count = Object.values(state.daily.checked).filter(Boolean).length;
+    if (count === total) {
+      // completed today fully right now; streak bumps at next-day rollover, but give immediate feedback
+    }
+    saveState(state);
+    renderDailyProgress();
+  });
+});
+renderDailyProgress();
+
+document.getElementById("reset-daily").addEventListener("click", () => {
+  state.daily.checked = {};
+  dailyChecklist.forEach(i => {
+    const cb = document.getElementById(`chk-${i.id}`);
+    cb.checked = false;
+    cb.closest("li").classList.remove("checked");
+  });
+  saveState(state);
+  renderDailyProgress();
+});
+
+/* ---------- interactivity: plano 7 dias ---------- */
+function renderPlan7Progress() {
+  const total = plano7.length;
+  const count = Object.values(state.plan7 || {}).filter(Boolean).length;
+  document.getElementById("plan7-progress-text").textContent = `${count}/${total}`;
+  document.getElementById("plan7-progress-bar").style.width = `${(count / total) * 100}%`;
+}
+plano7.forEach(d => {
+  const cb = document.getElementById(`day-${d.dia}`);
+  const card = cb.closest(".day-card");
+  cb.checked = !!state.plan7[d.dia];
+  card.classList.toggle("done", cb.checked);
+  cb.addEventListener("change", () => {
+    state.plan7[d.dia] = cb.checked;
+    card.classList.toggle("done", cb.checked);
+    saveState(state);
+    renderPlan7Progress();
+  });
+});
+renderPlan7Progress();
+
+/* ---------- theme toggle ---------- */
+const root = document.documentElement;
+const savedTheme = localStorage.getItem("tie_theme");
+if (savedTheme) root.setAttribute("data-theme", savedTheme);
+document.getElementById("theme-toggle").addEventListener("click", () => {
+  const current = root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const next = current === "dark" ? "light" : "dark";
+  root.setAttribute("data-theme", next);
+  localStorage.setItem("tie_theme", next);
+});
+
+/* ---------- initial route ---------- */
+const initial = location.hash.replace("#", "") || "diagnostico";
+switchTo(sections.some(s => s.id === initial) ? initial : "diagnostico");
+</script>
+</body>
+</html>
